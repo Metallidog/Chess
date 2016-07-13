@@ -3,7 +3,6 @@ class Square:
         self.color = color
         self.name = name
         self.location = location
-        self.occupant = None
         self.clear()
         
     def __repr__(self):
@@ -16,13 +15,25 @@ class Square:
         self.occupant = None
 
     def clear(self):
+        """
+        After every move made on the board, these paramaters need to be
+        cleared so that they me be re-evaluated with new piece locations.
+        """
         self.looked_at_by = []
+        self.occupant = None
 
 class Board:
     def __init__(self):
         self.grid = []
         self.piece_list = []
         self.populate_board()
+        
+    def print_board(self):
+        print ("\n\n\n\n")
+        for row in self.grid:
+            for square in row:
+                print (square, end = '')
+            print ('\n\n')
 
     def populate_board(self):
         for row in range(8):
@@ -33,12 +44,13 @@ class Board:
                 location = (row, col)
                 self.grid[row].append(Square(color, name, location))       
         
-    def print_board(self):
-        print ("\n\n\n\n")
-        for row in self.grid:
-            for square in row:
-                print (square, end = '')
-            print ('\n\n')
+    def populate_squares(self):
+        """
+        Iterates through boards piece_list and adds that piece to it's Square
+        """
+        for piece in self.piece_list:
+            r, c = piece.square.location
+            self.grid[r][c].occupant = piece          
 
     def new_game(self):
         """
@@ -53,9 +65,8 @@ class Board:
                                     Pawn(' White', self.grid[6][col]),
                                     majors[col](' White', self.grid[7][col])
                                     ])
-        for piece in self.piece_list:
-            r, c = piece.square.location
-            self.grid[r][c].occupant = piece
+        self.populate_squares()
+
             
     def custom_game(self):
         pass
