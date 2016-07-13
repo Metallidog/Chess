@@ -3,6 +3,7 @@ class Square:
         self.color = color
         self.name = name
         self.location = location
+        self.occupant = None
         self.clear()
         
     def __repr__(self):
@@ -11,8 +12,9 @@ class Square:
     def add_occupant(self, occupant):
         self.occupant = occupant
 
-    def del_occupant(self):
-        self.occupant = None
+    def del_occupant(self, board_list):
+        if self.occupant:
+            board_list.remove(self.occupant)
 
     def clear(self):
         """
@@ -36,6 +38,9 @@ class Board:
             print ('\n\n')
 
     def populate_board(self):
+        """
+        Creates and adds all the empty Square objects to the board grid
+        """
         for row in range(8):
             self.grid.append([])
             for col in range(8):
@@ -50,13 +55,18 @@ class Board:
         """
         for piece in self.piece_list:
             r, c = piece.square.location
-            self.grid[r][c].occupant = piece          
+            self.grid[r][c].add_occupant(piece)  
+            
+    def clear_squares(self):
+        for row in self.grid:
+            for square in row:
+                square.clear()
 
     def new_game(self):
         """
         Creates all the piece objects.
-        Creates a board piece_list filled with all the pieces.
-        Adds the pieces to the correct Square objects.
+        Creates a board piece_list filled with all the pieces in starting positions.
+        Calls populate_squares to put the pieces on the Square objects.
         """
         majors = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
         for col in range(8):
@@ -98,11 +108,17 @@ class Piece:
         else:
             self.move_builder(x, y, board)
             
-    def move(self,  to_square):
+    def move(self,  to_square, board):
         self.first_move = False
-        self.square.del_occupant()
+        to_square.del_occupant(board.piece_list)
         self.square = to_square
-        to_square.add_occupant(self)
+        board.clear_squares()
+        board.populate_squares()       
+        for piece in board.piece_list:
+            piece.clear()
+        #for piece in board.piece_list:
+            #piece.build_moves(board)
+
         
     def move_builder(self, x, y, board):
         if x in self.board_limits or y in self.board_limits:
@@ -176,11 +192,12 @@ class King(Piece):
             self.builder('step', direction, board)
             
         if self.first_move:
-            x = self.square.location[0]
-            if board.grid[x][0].occupant.first_move:
-                if not board.grid[x][1].occupant and not board.grid[x][2].occupant \
-                                                 and not board.grid[x][3].occupant:
-                    self.avail_moves.append(board.grid[x][2])
+            pass
+            #x = self.square.location[0]
+            #if board.grid[x][0].occupant.first_move:
+            #    if not board.grid[x][1].occupant and not board.grid[x][2].occupant \
+            #                                     and not board.grid[x][3].occupant:
+            #        self.avail_moves.append(board.grid[x][2])
                     
 class Pawn(Piece):
     def __init__(self, *args):
@@ -241,10 +258,8 @@ def get_input():
     
 while True:
     board.print_board()          
-    for r in range(8):
-        for c in range(8):
-            if board.grid[r][c].occupant:
-                board.grid[r][c].occupant.build_moves(board)            
+    for piece in board.piece_list:
+        piece.build_moves(board)            
     input("pause")
     for r in range(8):
         for c in range(8):
@@ -262,7 +277,7 @@ while True:
                 board.grid[r][c].occupant.clear()
             else:
                 board.grid[r][c].clear()
-    board.grid[fromx][fromy].occupant.move(board.grid[tox][toy])  
+    board.grid[fromx][fromy].occupant.move(board.grid[tox][toy], board)  
     
 
     
