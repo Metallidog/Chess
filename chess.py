@@ -57,6 +57,10 @@ class Board:
             r, c = piece.square.location
             self.grid[r][c].add_occupant(piece)  
             
+    def all_pieces_build_moves(self):
+        for piece in self.piece_list:
+            piece.build_moves(self)
+            
     def clear_squares(self):
         for row in self.grid:
             for square in row:
@@ -67,6 +71,7 @@ class Board:
         Creates all the piece objects.
         Creates a board piece_list filled with all the pieces in starting positions.
         Calls populate_squares to put the pieces on the Square objects.
+        Calls all_pieces_build_moves to get starting attributes for pieces
         """
         majors = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
         for col in range(8):
@@ -76,8 +81,8 @@ class Board:
                                     majors[col](' White', self.grid[7][col])
                                     ])
         self.populate_squares()
-
-            
+        self.all_pieces_build_moves()
+        
     def custom_game(self):
         pass
 
@@ -114,11 +119,7 @@ class Piece:
         self.square = to_square
         board.clear_squares()
         board.populate_squares()       
-        for piece in board.piece_list:
-            piece.clear()
-        #for piece in board.piece_list:
-            #piece.build_moves(board)
-
+        board.all_pieces_build_moves()
         
     def move_builder(self, x, y, board):
         if x in self.board_limits or y in self.board_limits:
@@ -241,7 +242,9 @@ class Pawn(Piece):
                 return 'enemy'
         else:
             return None
-        
+ 
+##########################################################################
+
 board = Board()
 board.new_game()
  
@@ -258,8 +261,8 @@ def get_input():
     
 while True:
     board.print_board()          
-    for piece in board.piece_list:
-        piece.build_moves(board)            
+    #for piece in board.piece_list:
+     #   piece.build_moves(board)            
     input("pause")
     for r in range(8):
         for c in range(8):
