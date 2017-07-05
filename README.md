@@ -1,2 +1,2 @@
 # Chess
-Chess game for Kivy
+Chess game for Tkinter
