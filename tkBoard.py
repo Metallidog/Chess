@@ -30,15 +30,21 @@ class Board:
         for hole in self.board_squares:
             hole.draw()
 
-    def init_board(self):
+    def init_new_game(self):
         square_names = [c+r for c in 'hgfedcba' for r in '12345678']
         for col in range(0, 8):
             for row in range(0, 8):                
                 square = Square(row, col, square_names[col*8+row])
                 self.board_squares.append(square)
  
-newGame = Board() 
-newGame.init_board()
-newGame.draw_board()
+class Game:
+    
+    def start(self):
+        newGame = Board()
+        newGame.init_new_game()
+        newGame.draw_board()
+
+game = Game()
+game.start()
 
 mainloop()
